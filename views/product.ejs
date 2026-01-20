@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include('./partials/nav.ejs') %>
+</head>
+<body>
+    
+
+    <div class="d-flex gap-3 flex-wrap">
+        <% products.forEach((product, index) => { %>
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title"><%=product.productName  %></h5>
+                  <h6 class="card-subtitle mb-2 text-body-secondary">$<%=product.productPrice  %></h6>
+                  <p class="card-text"><%=product.productDescription  %></p>
+                  
+                   <div class="d-flex gap-1">
+                    <a class="btn btn-primary" href="/edit/<%= index %>">Edit</a>
+                    <form action="/delete/<%=index %>" method="post">
+
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                   </div>
+                </form>
+                </div>
+              </div>
+        <% }) %>
+    </div>
+</body>
+</html>

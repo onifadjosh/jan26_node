@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include('./partials/nav.ejs') %>
+</head>
+<body>
+
+    
+    
+
+    <h1>HELOO, WELCOME TO <%= name %></h1>
+
+    <% if (gender=='female') { %>
+     <h1>This person is a <%= gender %></h1>
+    <% } else if (gender=="male") { %>
+        <h1>This person is a <%= gender %></h1>
+        <% }else { %>
+            <h1>Say nothing</h1>
+        <% } %>
+
+
+        <% numbers.forEach((number, index) => { %>
+            <h1><%= index+1 %>. <%=number %></h1>
+        <% }) %>
+         
+     
+</body>
+</html>
