@@ -124,9 +124,7 @@ app.get("/ejs", (req, res) => {
   });
 });
 
-app.get("/products", (req, res) => {
-  res.render("product", { products });
-});
+
 
 app.get("/add-product", (req, res) => {
   res.render("addProduct");

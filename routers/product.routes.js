@@ -1,10 +1,16 @@
-const express = require('express')
-const { listProduct } = require('../controllers/product.controller')
+const express = require('express');
+const route = express.Router();
 
-const router = express.Router() 
+const { listProduct, getProducts, deleteProducts, editProduct } = require('../controllers/product.controller');
 
+console.log('DEBUG CONTROLLER IMPORT:', {
+  listProductType: typeof listProduct,
+  getProductsType: typeof getProducts,
+});
 
-router.post('/addProduct', listProduct)
+route.post('/addProduct', listProduct);
+route.get('/getproducts', getProducts);
+route.delete('/deleteProduct/:id', deleteProducts);
+route.patch('/product/:id',editProduct);
 
-
-module.exports=router
+module.exports = route;
