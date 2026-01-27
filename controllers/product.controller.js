@@ -1,3 +1,4 @@
+const { omitUndefined } = require("mongoose");
 const ProductModel = require("../models/product.model");
 
 const listProduct = async (req, res) => {
@@ -28,7 +29,7 @@ const getProducts = async (req, res) => {
   // res.render("product", { products });
   try {
     console.log("hello");
-    // const products = await ProductModel.find()
+    const products = await ProductModel.find();
     // const products = await ProductModel.find().select("-productName")
     res.status(200).send({
       message: "product fetched successfully",
@@ -57,23 +58,29 @@ const deleteProducts = async (req, res) => {
 
 const editProduct = async (req, res) => {
   const { id } = req.params;
-  const { productName } = req.body;
+  const { productName, productPrice } = req.body;
   try {
-    let getTheProd = await ProductModel.findById(id);
-    if (getTheProd) {
-      let product = await ProductModel.findByIdAndUpdate({
-        _id: id,
-        productName: productName,
-      });
+    let allowedupdate = {
+      ...(productName && { productName }),
+      ...(productPrice && { productPrice }),
+    };
+   
+      let product = await ProductModel.findByIdAndUpdate(
+        id,
+        allowedupdate,
+        { new: true }
+      );
       res.status(200).send({
         message: "product updated successfully",
-        getTheProd
+        product,
       });
-    } else {
-      res.status(404).send({
-        message: "product not found",
-      });
-    }
+ 
+      if(!product){
+        res.status(404).send({
+          message: "product not found",
+        });
+      }
+
   } catch (error) {
     res.status(400).send({
       message: "product cannot be updated",
@@ -85,5 +92,5 @@ module.exports = {
   listProduct,
   getProducts,
   deleteProducts,
-  editProduct
+  editProduct,
 };
