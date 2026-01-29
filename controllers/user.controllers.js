@@ -1,4 +1,5 @@
 const UserModel = require("../models/user.model");
+const bcrypt = require('bcrypt')
 // const {z} = require("zod")
 
 // const registerUserSchema = z.object({
@@ -10,10 +11,14 @@ const UserModel = require("../models/user.model");
 // }).strict()
 
 const registerUser=async(req, res)=>{
+
     const {name, username, password, email} = req.body
     // const registerUserr= registerUserSchema.parse(req.body)
     try {
-       let user = await UserModel.create(req.body)
+    
+        let saltRound = await bcrypt.genSalt(10)
+        let hashedPassword = await bcrypt.hash(password, saltRound)
+       let user = await UserModel.create({name, username, password:hashedPassword, email})
        res.status(201).send(
         {
             message:"user created successfully",
@@ -26,9 +31,17 @@ const registerUser=async(req, res)=>{
         }
        )
     } catch (error) {
-        res.status(400).send({
-            message:"error creating user"
-        })
+        console.log(error);
+        
+        if(error.code== 11000){
+            res.status(400).send({
+                message:"User Already Exists"
+            })
+        }else{
+            res.status(400).send({
+                message:"error creating user"
+            })
+        }
     }
 }
 
