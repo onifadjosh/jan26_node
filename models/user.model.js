@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
     default: "user",
   },
 //   lastLogin:
-}, {timestamps:true});
+}, {timestamps:true, strict:"throw"});
 
 const UserModel = mongoose.model("users", UserSchema);
 
