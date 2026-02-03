@@ -1,23 +1,23 @@
-//get product from db
-//edit product in db
-// delete product in db
-//fetch single product
+//get product from db✅
+//edit product in db✅
+// delete product in db✅
+//fetch single product✅
 
 
 
 
 
-//create account - gen token -jwt
-//login
+//create account - gen token -jwt✅
+//login✅
 
-//patch request
+//patch request✅
 //assign roles ->admin, user
 
 
 //change password
 //send mail
 //cloudinary
-//.populate
+//.populate✅
 
 
 //using and creating query params
