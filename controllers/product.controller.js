@@ -9,9 +9,10 @@ const listProduct = async (req, res) => {
     productImage,
     productDescription,
   } = req.body;
+ 
 
   try {
-    const product = await ProductModel.create(req.body);
+    const product = await ProductModel.create({...req.body, createdBy:req.user});
 
     res.status(201).send({
       message: "Product created successfully",
@@ -29,13 +30,15 @@ const getProducts = async (req, res) => {
   // res.render("product", { products });
   try {
     console.log("hello");
-    const products = await ProductModel.find();
+    const products = await ProductModel.find().populate("createdBy", "name email username")
     // const products = await ProductModel.find().select("-productName")
     res.status(200).send({
       message: "product fetched successfully",
       products,
     });
   } catch (error) {
+    console.log(error);
+    
     res.status(404).send({ message: "products not found" });
   }
 };

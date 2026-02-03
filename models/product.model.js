@@ -20,7 +20,12 @@ const ProductSchema = mongoose.Schema({
     productDescription:{
         type:String, required:true
     },
-})
+
+    createdBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"users"
+    }
+},{timestamps:true})
 
 const ProductModel = mongoose.model("product", ProductSchema)
 

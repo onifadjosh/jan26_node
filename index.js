@@ -109,6 +109,7 @@ app.get("/", (req, res) => {
   //     name:"pampam",
   //     class:4
   // })
+  
 
   let path = __dirname;
   console.log(path);

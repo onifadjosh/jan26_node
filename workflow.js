@@ -4,15 +4,21 @@
 //fetch single product
 
 
-//using and creating query params
-//pagination
+
 
 
 //create account - gen token -jwt
 //login
-//send mail
+
+//patch request
 //assign roles ->admin, user
 
 
+//change password
+//send mail
 //cloudinary
 //.populate
+
+
+//using and creating query params
+//pagination
