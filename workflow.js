@@ -14,8 +14,8 @@
 //assign roles ->admin, user
 
 
-//change password
-//send mail
+//change password✅
+//send mail✅
 //cloudinary
 //.populate✅
 
