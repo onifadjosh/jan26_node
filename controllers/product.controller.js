@@ -1,4 +1,3 @@
-const { omitUndefined } = require("mongoose");
 const ProductModel = require("../models/product.model");
 
 const listProduct = async (req, res) => {
@@ -30,7 +29,8 @@ const getProducts = async (req, res) => {
   // res.render("product", { products });
   try {
     console.log("hello");
-    const products = await ProductModel.find().populate("createdBy", "name email username")
+    const products = await ProductModel.find()
+    .populate("createdBy", "name email username _id")
     // const products = await ProductModel.find().select("-productName")
     res.status(200).send({
       message: "product fetched successfully",
@@ -42,6 +42,45 @@ const getProducts = async (req, res) => {
     res.status(404).send({ message: "products not found" });
   }
 };
+
+
+const getProductsBy=async(req, res)=>{
+  const{productName, productPrice, createdBy}= req.query
+  const page = parseInt(req.query.page)||1
+  const limit= parseInt(req.query.limit)||10
+
+  const skip = (page-1)*limit
+
+  try {
+    const filter ={}
+  if(productName) filter.productName={$regex:productName, $options:"i"}
+  if(createdBy) filter.createdBy= createdBy
+  if(productPrice) filter.productPrice= productPrice
+
+  const products = await ProductModel.find(filter).populate("createdBy", "name email username")
+  .skip(skip)
+  .limit(limit)
+  .sort({createdAt:-1})
+
+
+  const total = await ProductModel.countDocuments()
+  res.status(200).send({
+    message: "product fetched successfully",
+    products,
+
+    meta:{
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      total
+    }
+  });
+
+  } catch (error) {
+    console.log(error);
+    
+    res.status(404).send({ message: "products not found" });
+  }
+  }
 
 const deleteProducts = async (req, res) => {
   const { id } = req.params;
@@ -96,4 +135,5 @@ module.exports = {
   getProducts,
   deleteProducts,
   editProduct,
+  getProductsBy
 };

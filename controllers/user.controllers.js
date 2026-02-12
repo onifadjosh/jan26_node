@@ -47,8 +47,8 @@ const registerUser = async (req, res) => {
         username,
         email,
         role: user?.role,
-        token,
       },
+      token,
     });
 
     let mailOptions = {

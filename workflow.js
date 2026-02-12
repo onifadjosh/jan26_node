@@ -16,9 +16,10 @@
 
 //change password✅
 //send mail✅
-//cloudinary
 //.populate✅
 
 
-//using and creating query params
+//cloudinary
+//cors✅
+//using and creating query params✅
 //pagination
