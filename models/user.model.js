@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
     enum: ["admin", "user"],
     default: "user",
   },
+  verified:{ type: Boolean, default: false },
 //   lastLogin:
 }, {timestamps:true, strict:"throw"});
 

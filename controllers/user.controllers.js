@@ -3,13 +3,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { renderTemplate } = require("../middleware/mail.sender");
+const otpgen = require("otp-generator");
+const OTPModel = require("../models/otp.model");
 
 let transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.APP_MAIL,
-    pass: process.env.APP_PASS
-  }
+    pass: process.env.APP_PASS,
+  },
 });
 // const {z} = require("zod")
 
@@ -38,7 +40,10 @@ const registerUser = async (req, res) => {
     });
     console.log(token);
 
-    const mailContent = await renderTemplate('welcomeMail.ejs', {name, companyName:"Himer Stores"})
+    const mailContent = await renderTemplate("welcomeMail.ejs", {
+      name,
+      companyName: "Himer Stores",
+    });
 
     res.status(201).send({
       message: "user created successfully",
@@ -53,22 +58,23 @@ const registerUser = async (req, res) => {
 
     let mailOptions = {
       from: process.env.APP_MAIL,
-      to:process.env.APP_MAIL,
-      bcc: ['oluwafemiajayi103@gmail.com', 'charliemoss008@gmail.com', process.env.APP_MAIL],
+      to: process.env.APP_MAIL,
+      bcc: [
+        "oluwafemiajayi103@gmail.com",
+        "charliemoss008@gmail.com",
+        process.env.APP_MAIL,
+      ],
       subject: `Welcome ${name}`,
-      html:mailContent
+      html: mailContent,
     };
-    
 
-    transporter.sendMail(mailOptions, function(error, info){
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
       } else {
-        console.log('Email sent: ' + info.response);
+        console.log("Email sent: " + info.response);
       }
     });
-
-   
   } catch (error) {
     console.log(error);
 
@@ -200,16 +206,121 @@ const changePassword = async (req, res) => {
     //then send all
   } catch (error) {
     console.log(error);
-    
+
     res.status(404).send({
       message: "Error changing password",
     });
   }
 };
 
+const sendOtp = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const isUser = await UserModel.findOne({ email });
+
+    if (!isUser) {
+      res.status(404).send({
+        message: "Account doesnt exist",
+      });
+
+      return;
+    }
+
+    const otp = await otpgen.generate(4, {
+      digits: true,
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+    // console.log(otp);
+    const sent = await OTPModel.create({ email, otp });
+    const mailContent = await renderTemplate("otpMail.ejs", {
+      name: isUser.name,
+      companyName: "Himer Stores",
+      otp,
+    });
+
+    let mailOptions = {
+      from: process.env.APP_MAIL,
+      to: process.env.APP_MAIL,
+      bcc: [
+        "oluwafemiajayi103@gmail.com",
+        "charliemoss008@gmail.com",
+        process.env.APP_MAIL,
+      ],
+      subject: `Verification`,
+      html: mailContent,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+    res.status(200).send({
+      message: "Otp sent successfully",
+      data: {
+        email,
+        otp,
+      },
+    });
+   
+
+    
+  } catch (error) {
+    res.status(500).send({
+      message: "Otp cannot be sent at this time",
+    });
+  }
+};
+
+
+const verifyOtp=async(req, res)=>{
+  const{email, otp}= req.body
+
+  try {
+     const isUser=await OTPModel.findOne({email})
+     if(!isUser){
+      res.status(404).send({
+        message: "Account doesnt exist",
+      });
+
+      return;
+     }
+
+    const isMatch = (otp==isUser.otp)
+    console.log(isMatch);
+    if(!isMatch){
+      res.status(404).send({
+        message: "invalid otp",
+      });
+
+      return
+    }
+    
+    await UserModel.findOneAndUpdate({email}, {verified:true})
+
+    res.status(200).send({
+      message: "Account verified successfully",
+    });
+
+  } catch (error) {
+    res.status(400).send({
+      message: "invalid otp",
+    });
+  }
+
+}
+
 module.exports = {
   registerUser,
   loginUser,
   verifyAuth,
   changePassword,
+  sendOtp,
+  verifyOtp
 };
+
+//create account(unverfied)->send otp->verify otp ->verify account
