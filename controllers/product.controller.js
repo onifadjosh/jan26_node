@@ -21,7 +21,12 @@ const listProduct = async (req, res) => {
     const image = await cloudinary.uploader
       .upload(productImage)
       .then((result) => {
-        return result.secure_url;
+
+        const ImageObject = {
+          url: result.secure_url,
+          public_id:result.public_id
+        }
+        return ImageObject
       })
       .catch((err) => {
         console.log(err);
@@ -118,7 +123,14 @@ const deleteProducts = async (req, res) => {
   const { id } = req.params;
 
   try {
+    const prod = await ProductModel.findById(id)
+
     const deletedProd = await ProductModel.findByIdAndDelete({ _id: id });
+
+    console.log(prod.productImage.public_id);
+    
+
+    await cloudinary.uploader.destroy(prod.productImage.public_id)
 
     res.status(200).send({
       message: "Product Deleted successfully",
